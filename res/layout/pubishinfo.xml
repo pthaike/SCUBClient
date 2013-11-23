@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+    <LinearLayout android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        android:padding="5dip"
+        >
+        <TextView 
+             android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:text="@string/infotitle"
+             />
+
+         <EditText
+             android:id="@+id/infotitle"
+             android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:hint="@string/titletishi" 
+             />
+
+          <TextView 
+             android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:text="@string/infocontext"
+             />
+        <ScrollView 
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            >
+         <EditText 
+             android:id="@+id/infocontext"
+             android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:lines="10"
+             android:hint="@string/texttishi"
+             />
+        </ScrollView>
+        <Button android:id="@+id/publishbtn"
+            android:layout_width="120px"
+            android:layout_height="wrap_content"
+            android:text="@string/publish"
+            />
+    </LinearLayout>
+</LinearLayout>
