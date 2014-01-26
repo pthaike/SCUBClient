@@ -10,7 +10,9 @@ import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.DialogInterface.OnKeyListener;
+import android.content.SharedPreferences.Editor;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
@@ -28,6 +30,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 
 public class JwcActivity extends ListActivity{
 
@@ -39,14 +42,16 @@ public class JwcActivity extends ListActivity{
 	private SimpleAdapter adapter;
 	private Connector connector=null;
 	private ProgressDialog pd=null;
-	private String[] menuName={"退出","关于"};
-	private int[] menuImage={R.drawable.c,R.drawable.d};
+	private String[] menuName={"退出"};
+	private int[] menuImage={R.drawable.exit};
 	private AlertDialog menuDialog;
 	private GridView menuGrid;
 	private View menuView;
-	private int mManage=1;  //管理员登录
+	private int mManage=0;  //管理员登录
+	private SharedPreferences sharedPrefenrence=null;
+	private Editor editor=null;
 	//管理员登陆
-	private final int ITEM_MANAGE=0;
+	//private final int ITEM_MANAGE=0;
 	//退出
 	private final int ITEM_EXIT=1;
 	//关于
@@ -57,7 +62,7 @@ public class JwcActivity extends ListActivity{
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		
+		ExitApp.getInstance().addActivity(this);
 		requestWindowFeature(Window.FEATURE_NO_TITLE); //窗口去掉标题
 		//设置窗口为全屏
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -66,43 +71,20 @@ public class JwcActivity extends ListActivity{
 		inflater=(LayoutInflater)this.getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		mainLayout=inflater.inflate(R.layout.title, null);
 		
+		sharedPrefenrence=getSharedPreferences("config",Context.MODE_PRIVATE);  ///
+		mManage=sharedPrefenrence.getInt("manage", 0);
+		
 		menuView=View.inflate(this, R.layout.gridview_menu, null);
 		menuDialog=new AlertDialog.Builder(this).create();
 		menuDialog.setView(menuView);
-		menuDialog.setOnKeyListener(new OnKeyListener(){
-
-			@Override
-			public boolean onKey(DialogInterface arg0, int arg1, KeyEvent arg2) {
-				// TODO Auto-generated method stub
-				if(arg1==KeyEvent.KEYCODE_MENU){  //监听按键
-					arg0.dismiss();
-				}
-				return false;
-			}
-			
-		});
+		menuDialog.setOnKeyListener(new MyOnkeyListener());
 		menuGrid=(GridView)menuView.findViewById(R.id.gridview);
 		menuGrid.setAdapter(getMenuAdapter(menuName,menuImage));
 		menuGrid.setOnItemClickListener(new MyOnItemClickListener());
 		//获取服务器信息
+		pd=ProgressDialog.show(JwcActivity.this, "加载数据", "请稍后...");
 		getInfo();
-		mListView.setOnItemClickListener(new OnItemClickListener(){
-
-				@Override
-				public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-						long arg3) {
-					// TODO Auto-generated method stub
-					Intent intent=new Intent();
-					intent.setClass(JwcActivity.this, InfoContextActivity.class);
-					Bundle bundle=new Bundle();
-					Map<String,Object> map=mData.get(arg2);
-					String infoid=(String)map.get("link");
-					bundle.putString("link", infoid);   //传输信息id
-					bundle.putBoolean("jwc", true);
-					intent.putExtras(bundle);
-					startActivity(intent);
-				}
-			});
+		mListView.setOnItemClickListener(new MyListOnItemListener());
 	}
 	
 	@Override
@@ -117,12 +99,6 @@ public class JwcActivity extends ListActivity{
 	//获取菜单
 	private SimpleAdapter getMenuAdapter(String[] menuNameArray,int[] imageResourceArray){
 		ArrayList<HashMap<String,Object>> data=new ArrayList<HashMap<String,Object>>();
-		if(mManage==1){
-			HashMap<String,Object> map=new HashMap<String,Object>();
-			map.put("itemImage",R.drawable.a);
-			map.put("itemText",  "管理员登录");
-			data.add(map);
-		}
 		for(int i=0;i<menuNameArray.length;i++){
 			HashMap<String,Object> map=new HashMap<String,Object>();
 			map.put("itemImage", imageResourceArray[i]);
@@ -167,16 +143,17 @@ public class JwcActivity extends ListActivity{
 			public void run() {
 				// TODO Auto-generated method stub
 				try{
-					//pd=ProgressDialog.show(JwcActivity.this, "连接服务器", "请稍后...");
 					jwcinfo=new GetJwcInfo();
 					String html=jwcinfo.getTitlehtml();
+					System.out.println("html----->"+html);
 					if(html==null){
+						handler.sendEmptyMessage(0);
 						return;
 					}
 					mData=jwcinfo.filterTitleHtml(html);
 					setadapter();
-					//pd.dismiss();
-					handler.sendEmptyMessage(0);
+					
+					handler.sendEmptyMessage(1);
 				}catch (Exception e){
 					e.printStackTrace();
 				}
@@ -191,6 +168,11 @@ public class JwcActivity extends ListActivity{
 			// TODO Auto-generated method stub
 			switch(msg.what){
 			case 0:
+				pd.dismiss();
+				connecttishi();
+				break;
+			case 1:
+				pd.dismiss();
 				setListAdapter(adapter);
 				break;
 			}
@@ -202,12 +184,63 @@ public class JwcActivity extends ListActivity{
 		adapter=new SimpleAdapter(this,mData,android.R.layout.simple_list_item_2,new String[]{"title","time"},new int[]{android.R.id.text1,android.R.id.text2});
 	}
 	
+	protected void connecttishi(){
+		 AlertDialog alertDialog = new AlertDialog.Builder(JwcActivity.this)  
+	        .setTitle("提示！")   
+	        .setMessage("请检测网络")  
+	        .setPositiveButton("确定",   
+	        new DialogInterface.OnClickListener() {  
+	            @Override  
+	            public void onClick(DialogInterface dialog, int which) {  
+	                dialog.cancel();  //提示对话框关闭  
+	            }  
+	        }).create();  
+	        alertDialog.show();
+	}
 	
 	public void setContentView(int layoutResId){
 		View v=this.inflater.inflate(layoutResId, null);
 		ViewGroup container=(ViewGroup)mainLayout.findViewById(R.id.container);
 		container.addView(v);
 		super.setContentView(mainLayout);
+	}
+	
+	private class MyOnkeyListener implements OnKeyListener{
+
+		@Override
+		public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+			// TODO Auto-generated method stub
+			if(keyCode==KeyEvent.KEYCODE_MENU){  //监听按键
+				dialog.dismiss();
+			}
+			return false;
+		}
+		
+	}
+	
+	private class MyListOnItemListener implements OnItemClickListener{
+
+		@Override
+		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+				long arg3) {
+			// TODO Auto-generated method stub
+			Intent intent=new Intent();
+			intent.setClass(JwcActivity.this, InfoContextActivity.class);
+			Bundle bundle=new Bundle();
+			Map<String,Object> map=mData.get(arg2);
+			String infoid=(String)map.get("link");
+			
+			getSharedPreferences("config",Context.MODE_PRIVATE);
+			editor=sharedPrefenrence.edit();
+			editor.putString("link", infoid);
+			editor.putBoolean("jwc", true);
+			editor.putInt("manage", 1);
+			editor.commit();
+			
+			startActivity(intent);
+			
+		}
+		
 	}
 	
 	private class MyOnItemClickListener implements OnItemClickListener{
@@ -218,13 +251,6 @@ public class JwcActivity extends ListActivity{
 			// TODO Auto-generated method stub
 			Intent intent=null;
 			switch(arg2){
-			case ITEM_MANAGE:
-				intent=new Intent(JwcActivity.this,LoginActivity.class);
-				Bundle bundle =new Bundle();
-				bundle.putInt("type", 1);
-				intent.putExtras(bundle);
-				startActivity(intent);
-				break;
 			case ITEM_EXIT:
 				exitSys();
 				break;
@@ -243,7 +269,7 @@ public class JwcActivity extends ListActivity{
         new DialogInterface.OnClickListener() {  
             @Override  
             public void onClick(DialogInterface dialog, int which) {  
-                System.exit(0);  
+            	ExitApp.getInstance().exit();   
                 dialog.cancel();  //提示对话框关闭  
             }  
         })  

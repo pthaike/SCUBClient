@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/logback"
+    android:background="@drawable/loginback"
     android:gravity="center_horizontal"
     >
    <LinearLayout
@@ -55,7 +55,15 @@
 		android:layout_gravity="center_horizontal"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		>												<!-- 声明于显示按钮的线性布局 -->
+		>
+        <CheckBox
+			android:id="@+id/loginRemember"
+			android:text="@string/logincheck"
+			android:layout_gravity="center_horizontal"
+			android:checked="false"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			/>												
 		<Button
 			android:id="@+id/btnLogin"
 			style="@style/button"

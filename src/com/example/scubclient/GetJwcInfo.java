@@ -25,6 +25,9 @@ public class GetJwcInfo {
 		HttpGet get=new HttpGet(TURL);
 		try{
 			HttpResponse httpresponse=new DefaultHttpClient().execute(get);
+			if(httpresponse==null){
+				return null;
+			}
 			HttpEntity entity=httpresponse.getEntity();
 			html=EntityUtils.toString(entity);
 		}catch(Exception e){

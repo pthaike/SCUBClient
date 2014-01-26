@@ -5,6 +5,7 @@ import static com.example.scubclient.ConstantUtil.SERVER_PORT;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -13,8 +14,10 @@ import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.DialogInterface.OnKeyListener;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,11 +30,11 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 
 public class QgActivity extends ListActivity{
 
@@ -42,22 +45,26 @@ public class QgActivity extends ListActivity{
 	private SimpleAdapter adapter;
 	private Connector connector=null;
 	private ProgressDialog pd=null;
-	private String[] menuName={"管理员登录","退出","关于"};
-	private int[] menuImage={R.drawable.b,R.drawable.c,R.drawable.d};
+	private String[] menuName={"退出"};
+	private int[] menuImage={R.drawable.exit};
 	private AlertDialog menuDialog;
 	private GridView menuGrid;
 	private View menuView;
 	private int start=0;
 	private int end=20;
-	private int mManage=1;  //管理员登录
+	private int mManage=0;  //管理员登录
+	private SharedPreferences sharedPrefenrence=null;
+	private Editor editor=null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		Intent intent=getIntent();
-		Bundle bundle=intent.getExtras();
-		mManage=bundle.getInt("manage");
+		ExitApp.getInstance().addActivity(this);
+		
+		sharedPrefenrence=getSharedPreferences("config",Context.MODE_PRIVATE);  ///
+		mManage=sharedPrefenrence.getInt("manage", 0);
+		
 		requestWindowFeature(Window.FEATURE_NO_TITLE); //窗口去掉标题
 		//设置窗口为全屏
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -69,63 +76,77 @@ public class QgActivity extends ListActivity{
 		menuView=View.inflate(this, R.layout.gridview_menu, null);
 		menuDialog=new AlertDialog.Builder(this).create();
 		menuDialog.setView(menuView);
-		menuDialog.setOnKeyListener(new OnKeyListener(){
-
-			@Override
-			public boolean onKey(DialogInterface arg0, int arg1, KeyEvent arg2) {
-				// TODO Auto-generated method stub
-				if(arg1==KeyEvent.KEYCODE_MENU){  //监听按键
-					arg0.dismiss();
-				}
-				return false;
-			}
-			
-		});
+		menuDialog.setOnKeyListener(new MenuOnKeyListener());
 		menuGrid=(GridView)menuView.findViewById(R.id.gridview);
 		menuGrid.setAdapter(getMenuAdapter(menuName,menuImage));
 		if(mManage==1){
 			menuGrid.setOnItemClickListener(new MyOnItemClickListener());
 		}else{
 			menuGrid.setOnItemClickListener(new MyUerOnItemClickListener());
-		}
+		} 
 		//获取服务器信息
+		pd=ProgressDialog.show(QgActivity.this, "加载数据", "请稍后...");
 		getInfo();
-		mListView.setOnItemClickListener(new OnItemClickListener(){
-
-				@Override
-				public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-						long arg3) {
-					// TODO Auto-generated method stub
-					Intent intent=new Intent();
-					intent.setClass(QgActivity.this, InfoContextActivity.class);
-					Bundle bundle=new Bundle();
-					Map<String,Object> map=mData.get(arg2);
-					String infoid=(String)map.get("id");
-					bundle.putBoolean("jwc", false);
-					bundle.putString("id", infoid);   //传输信息id
-					bundle.putInt("type", 3);
-					bundle.putInt("manage", mManage);
-					intent.putExtras(bundle);
-					startActivity(intent);
-				}
-			});
+		
+		mListView.setOnItemClickListener(new ListOnItemClickListener());
 	}
 	
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		if(connector!=null){
-			connector.ExitConnect();
+			//connector.ExitConnect();
 		}
 		super.onDestroy();
 	}
 
+	@Override
+	protected void onRestart() {
+		// TODO Auto-generated method stub
+		super.onRestart();
+		mData.clear();
+		getInfo();
+		adapter.notifyDataSetChanged();
+	}
+
+	private class MenuOnKeyListener implements OnKeyListener{
+		@Override
+		public boolean onKey(DialogInterface arg0, int arg1, KeyEvent arg2) {
+			// TODO Auto-generated method stub
+			if(arg1==KeyEvent.KEYCODE_MENU){  //监听按键
+				arg0.dismiss();
+			}
+			return false;
+		}
+	}
+	
+	private class ListOnItemClickListener implements OnItemClickListener{
+		@Override
+		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+				long arg3) {
+			// TODO Auto-generated method stub
+			Intent intent=new Intent();
+			intent.setClass(QgActivity.this, InfoContextActivity.class);
+			Map<String,Object> map=mData.get(arg2);
+			String infoid=(String)map.get("id");
+			
+			getSharedPreferences("config",Context.MODE_PRIVATE);
+			editor=sharedPrefenrence.edit();
+			editor.putString("id", infoid);
+			editor.putBoolean("jwc", false);
+			//editor.putInt("manage", mManage);
+			editor.commit();
+			
+			startActivity(intent);
+		}
+	}
+	
 	//获取菜单
 	private SimpleAdapter getMenuAdapter(String[] menuNameArray,int[] imageResourceArray){
 		ArrayList<HashMap<String,Object>> data=new ArrayList<HashMap<String,Object>>();
 		if(mManage==1){
 			HashMap<String,Object> map=new HashMap<String,Object>();
-			map.put("itemImage",R.drawable.a);
+			map.put("itemImage",R.drawable.publish);
 			map.put("itemText",  "发布信息");
 			data.add(map);
 		}
@@ -175,8 +196,9 @@ public class QgActivity extends ListActivity{
 				try{
 				//	pd=ProgressDialog.show(JwcActivity.this, "连接服务器", "请稍后...");
 					if(connector==null){
-						connector=new Connector(SERVER_ADRESS,SERVER_PORT);
+						connector=new Connector();
 					}
+					connector.ConnectServer(SERVER_ADRESS,SERVER_PORT);
 					String msg="<#GET_QGT#>"+start+"|"+end;
 					//pd=ProgressDialog.show(JwcActivity.this, "加载数据", "请稍后...");
 					connector.out.writeUTF(msg);
@@ -195,11 +217,10 @@ public class QgActivity extends ListActivity{
 							mData.add(map);
 						}
 						connector.ExitConnect();
-					//	pd.dismiss();
-						setadapter();
+						//setadapter();
 						handler.sendEmptyMessage(0);
 					}else{
-						Toast.makeText(QgActivity.this, "数据加载失败", Toast.LENGTH_LONG).show();
+						handler.sendEmptyMessage(1);
 					}
 				}catch (Exception e){
 					e.printStackTrace();
@@ -211,11 +232,17 @@ public class QgActivity extends ListActivity{
 	
 	Handler handler=new Handler(){
 
-		public void handleMessage(Message msg) {
+		public void handleMessage(Message msg){
 			// TODO Auto-generated method stub
 			switch(msg.what){
 			case 0:
+				pd.dismiss();
+				setadapter(mData);
 				setListAdapter(adapter);
+				break;
+			case 1:
+				pd.dismiss();
+				Toast.makeText(QgActivity.this, "数据加载失败", Toast.LENGTH_LONG).show();
 				break;
 			}
 			super.handleMessage(msg);
@@ -223,8 +250,9 @@ public class QgActivity extends ListActivity{
 		
 	};
 	
-	private void setadapter(){
-		adapter=new SimpleAdapter(this,mData,android.R.layout.simple_list_item_2,new String[]{"title","date"},new int[]{android.R.id.text1,android.R.id.text2});
+	private void setadapter(List<Map<String, Object>> data){
+		adapter=new SimpleAdapter(this,data,android.R.layout.simple_list_item_2,new String[]{"title","date"},new int[]{android.R.id.text1,android.R.id.text2});
+		
 	}
 	
 	
@@ -248,16 +276,9 @@ public class QgActivity extends ListActivity{
 				startActivity(intent);
 				break;
 			case 1:
-				intent=new Intent(QgActivity.this,LoginActivity.class);
-				Bundle bundle=new Bundle();
-				bundle.putInt("type", 3);
-				intent.putExtras(bundle);
-				startActivity(intent);
-				break;
-			case 2:
 				exitSys();
 				break;
-			case 3:
+			case 2:
 				
 				break;
 			}
@@ -270,19 +291,11 @@ public class QgActivity extends ListActivity{
 		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 				long arg3) {
 			// TODO Auto-generated method stub
-			Intent intent=null;
 			switch(arg2){
 			case 0:
-				intent=new Intent(QgActivity.this,LoginActivity.class);
-				Bundle bundle=new Bundle();
-				bundle.putInt("type", 3);
-				intent.putExtras(bundle);
-				startActivity(intent);
-				break;
-			case 1:
 				exitSys();
 				break;
-			case 2:
+			case 1:
 				break;
 			}
 		}
@@ -296,7 +309,7 @@ public class QgActivity extends ListActivity{
         new DialogInterface.OnClickListener() {  
             @Override  
             public void onClick(DialogInterface dialog, int which) {  
-                System.exit(0);  
+            	ExitApp.getInstance().exit(); 
                 dialog.cancel();  //提示对话框关闭  
             }  
         })  

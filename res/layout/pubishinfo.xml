@@ -4,12 +4,13 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="@drawable/seahome"
     >
-    <LinearLayout android:layout_width="fill_parent"
+  <!--   <LinearLayout android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical"
         android:padding="5dip"
-        >
+        > --> 
         <TextView 
              android:layout_width="fill_parent"
              android:layout_height="wrap_content"
@@ -22,6 +23,50 @@
              android:layout_height="wrap_content"
              android:hint="@string/titletishi" 
              />
+        <LinearLayout
+       		android:orientation="horizontal"
+			android:paddingTop="20px"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+   	   		 >
+   	   	<ImageButton
+			android:id="@+id/qgdatebtn"
+			android:src="@drawable/date"
+			android:layout_width="40px"
+			android:layout_height="40px"
+		/>
+   	    <!-- <Button
+    	    android:id="@+id/qgdatebtn"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+        	android:text="日期" 
+        	android:textSize="10dip"
+       		 /> -->
+        <TextView
+            android:id="@+id/publishdate"
+             android:layout_width="150px"
+		    android:layout_height="wrap_content"
+		    android:text="xxxx-xx-xx"
+           />
+        <ImageButton
+			android:id="@+id/qgtimebtn"
+			android:src="@drawable/time"
+			android:layout_width="40px"
+			android:layout_height="40px"
+		/>
+        <!-- <Button
+    	    android:id="@+id/qgtimebtn"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+        	android:text="时间" 
+       		 /> -->
+        <TextView
+            android:id="@+id/qgtime"
+             android:layout_width="150px"
+		    android:layout_height="wrap_content"
+		    android:text="00:00"
+           />
+        </LinearLayout>
 
           <TextView 
              android:layout_width="fill_parent"
@@ -40,10 +85,35 @@
              android:hint="@string/texttishi"
              />
         </ScrollView>
-        <Button android:id="@+id/publishbtn"
+         <LinearLayout
+       		android:orientation="horizontal"
+			android:paddingTop="20px"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+   	    >
+         <ImageButton
+			android:id="@+id/publishbtn"
+			android:src="@drawable/submit"
+			android:layout_width="120px"
+			android:layout_height="70px"
+		/>
+         <ImageButton
+			android:id="@+id/exitbtn"
+			android:src="@drawable/exit"
+			android:layout_width="120px"
+			android:layout_height="70px"
+		/>
+        <!-- <Button
+            android:id="@+id/publishbtn"
             android:layout_width="120px"
             android:layout_height="wrap_content"
-            android:text="@string/publish"
-            />
-    </LinearLayout>
+            android:text="@string/publish" />
+        <Button
+        	android:id="@+id/exitbtn"
+        	android:layout_width="120px"
+        	android:layout_height="wrap_content"
+        	android:text="@string/exit" 
+        /> -->
+        </LinearLayout>
+   <!--  </LinearLayout> -->
 </LinearLayout>

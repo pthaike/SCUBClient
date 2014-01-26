@@ -14,7 +14,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.DialogInterface.OnKeyListener;
+import android.content.SharedPreferences.Editor;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.os.Handler;
@@ -42,22 +44,25 @@ public class JzActivity extends ListActivity{
 	private SimpleAdapter adapter;
 	private Connector connector=null;
 	private ProgressDialog pd=null;
-	private String[] menuName={"管理员登录","退出","关于"};
-	private int[] menuImage={R.drawable.b,R.drawable.c,R.drawable.d};
+	private String[] menuName={"退出"};
+	private int[] menuImage={R.drawable.exit};
 	private AlertDialog menuDialog;
 	private GridView menuGrid;
 	private View menuView;
 	private int start=0;
 	private int end=20;
 	private int mManage=0;  //管理员登录
+	private SharedPreferences sharedPrefenrence=null;
+	private Editor editor=null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		Intent intent=getIntent();
-		Bundle bundle=intent.getExtras();
-		mManage=bundle.getInt("manage");
+		ExitApp.getInstance().addActivity(this);
+		sharedPrefenrence=getSharedPreferences("config",Context.MODE_PRIVATE);
+		mManage=sharedPrefenrence.getInt("manage", 0);
+		
 		requestWindowFeature(Window.FEATURE_NO_TITLE); //窗口去掉标题
 		//设置窗口为全屏
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -69,18 +74,7 @@ public class JzActivity extends ListActivity{
 		menuView=View.inflate(this, R.layout.gridview_menu, null);
 		menuDialog=new AlertDialog.Builder(this).create();
 		menuDialog.setView(menuView);
-		menuDialog.setOnKeyListener(new OnKeyListener(){
-
-			@Override
-			public boolean onKey(DialogInterface arg0, int arg1, KeyEvent arg2) {
-				// TODO Auto-generated method stub
-				if(arg1==KeyEvent.KEYCODE_MENU){  //监听按键
-					arg0.dismiss();
-				}
-				return false;
-			}
-			
-		});
+		menuDialog.setOnKeyListener(new MenuOnKeyListener());
 		menuGrid=(GridView)menuView.findViewById(R.id.gridview);
 		menuGrid.setAdapter(getMenuAdapter(menuName,menuImage));
 		if(mManage==1){
@@ -90,33 +84,34 @@ public class JzActivity extends ListActivity{
 		}
 		
 		//获取服务器信息
+		pd=ProgressDialog.show(JzActivity.this, "加载数据", "请稍后...");
+		
 		getInfo();
-		mListView.setOnItemClickListener(new OnItemClickListener(){
-
-				@Override
-				public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-						long arg3) {
-					// TODO Auto-generated method stub
-					Intent intent=new Intent();
-					intent.setClass(JzActivity.this, InfoContextActivity.class);
-					Bundle bundle=new Bundle();
-					Map<String,Object> map=mData.get(arg2);
-					String infoid=(String)map.get("id");
-					bundle.putString("id", infoid);   //传输信息id
-					bundle.putInt("type", 2);
-					bundle.putBoolean("jwc", false);
-					bundle.putInt("manage", mManage);
-					intent.putExtras(bundle);
-					startActivity(intent);
-				}
-			});
+		
+		mListView.setOnItemClickListener(new ListItemClickListener());
 	}
 	
+//	@Override
+//	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//		// TODO Auto-generated method stub
+//		super.onActivityResult(requestCode, resultCode, data);
+//		refresh();
+//	}
+	
+	@Override
+	protected void onRestart() {
+		// TODO Auto-generated method stub
+		super.onRestart();
+		mData.clear();
+		getInfo();
+		adapter.notifyDataSetChanged();
+	}
+
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		if(connector!=null){
-			connector.ExitConnect();
+			//connector.ExitConnect();
 		}
 		super.onDestroy();
 	}
@@ -126,7 +121,7 @@ public class JzActivity extends ListActivity{
 		ArrayList<HashMap<String,Object>> data=new ArrayList<HashMap<String,Object>>();
 		if(mManage==1){
 			HashMap<String,Object> map=new HashMap<String,Object>();
-			map.put("itemImage",R.drawable.a);
+			map.put("itemImage",R.drawable.publish);
 			map.put("itemText",  "发布信息");
 			data.add(map);
 		}
@@ -174,12 +169,11 @@ public class JzActivity extends ListActivity{
 			public void run() {
 				// TODO Auto-generated method stub
 				try{
-				//	pd=ProgressDialog.show(JwcActivity.this, "连接服务器", "请稍后...");
 					if(connector==null){
-						connector=new Connector(SERVER_ADRESS,SERVER_PORT);
+						connector=new Connector();
 					}
+					connector.ConnectServer(SERVER_ADRESS,SERVER_PORT);
 					String msg="<#GET_JZT#>"+start+"|"+end;
-					//pd=ProgressDialog.show(JwcActivity.this, "加载数据", "请稍后...");
 					connector.out.writeUTF(msg);
 					String reply=connector.in.readUTF();
 					if(reply.startsWith("<#INFO_SUCCES#>")){
@@ -197,11 +191,9 @@ public class JzActivity extends ListActivity{
 							mData.add(map);
 						}
 						connector.ExitConnect();
-					//	pd.dismiss();
-						setadapter();
 						handler.sendEmptyMessage(0);
 					}else{
-						Toast.makeText(JzActivity.this, "数据加载失败", Toast.LENGTH_LONG).show();
+						handler.sendEmptyMessage(1);
 					}
 				}catch (Exception e){
 					e.printStackTrace();
@@ -217,7 +209,13 @@ public class JzActivity extends ListActivity{
 			// TODO Auto-generated method stub
 			switch(msg.what){
 			case 0:
+				pd.dismiss();
+				setadapter();
 				setListAdapter(adapter);
+				break;
+			case 1:
+				pd.dismiss();
+				Toast.makeText(JzActivity.this, "数据加载失败", Toast.LENGTH_LONG).show();
 				break;
 			}
 			super.handleMessage(msg);
@@ -237,6 +235,41 @@ public class JzActivity extends ListActivity{
 		super.setContentView(mainLayout);
 	}
 	
+	private class ListItemClickListener implements OnItemClickListener{
+
+		@Override
+		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+				long arg3) {
+			// TODO Auto-generated method stub
+			Intent intent=new Intent();
+			intent.setClass(JzActivity.this, ShowJzActivity.class);
+			Bundle bundle=new Bundle();
+			Map<String,Object> map=mData.get(arg2);
+			String infoid=(String)map.get("id");
+			
+			sharedPrefenrence=getSharedPreferences("config",Context.MODE_PRIVATE);
+			editor=sharedPrefenrence.edit();
+			editor.putString("infoid", infoid);
+			bundle.putInt("type", 1);
+			editor.commit();
+			
+			startActivity(intent);
+		}
+	}
+	
+	private class MenuOnKeyListener implements OnKeyListener{
+
+		@Override
+		public boolean onKey(DialogInterface arg0, int arg1, KeyEvent arg2) {
+			// TODO Auto-generated method stub
+			if(arg1==KeyEvent.KEYCODE_MENU){  //监听按键
+				arg0.dismiss();
+			}
+			return false;
+		}
+		
+	}
+	
 	private class MyOnItemClickListener implements OnItemClickListener{
 
 		@Override
@@ -246,20 +279,13 @@ public class JzActivity extends ListActivity{
 			Intent intent=null;
 			switch(arg2){
 			case 0:
-				intent=new Intent(JzActivity.this,PublishActivity.class);
+				intent=new Intent(JzActivity.this,JzPublishActivity.class);
 				startActivity(intent);
 				break;
 			case 1:
-				Bundle bundle=new Bundle();
-				bundle.putInt("type", 2);
-				intent.putExtras(bundle);
-				intent=new Intent(JzActivity.this,LoginActivity.class);
-				startActivity(intent);
-				break;
-			case 2:
 				exitSys();
 				break;
-			case 3:
+			case 2:
 				
 				break;
 			}
@@ -275,16 +301,9 @@ public class JzActivity extends ListActivity{
 			Intent intent=null;
 			switch(arg2){
 			case 0:
-				intent=new Intent(JzActivity.this,LoginActivity.class);
-				Bundle bundle=new Bundle();
-				bundle.putInt("type", 2);
-				intent.putExtras(bundle);
-				startActivity(intent);
-				break;
-			case 1:
 				exitSys();
 				break;
-			case 2:
+			case 1:
 				break;
 			}
 		}
@@ -298,7 +317,7 @@ public class JzActivity extends ListActivity{
          new DialogInterface.OnClickListener() {  
              @Override  
              public void onClick(DialogInterface dialog, int which) {  
-                 System.exit(0);  
+            	 ExitApp.getInstance().exit();  
                  dialog.cancel();  //提示对话框关闭  
              }  
          })  

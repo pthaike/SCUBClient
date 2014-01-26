@@ -1,18 +1,21 @@
 package com.example.scubclient;
 
+import static com.example.scubclient.ConstantUtil.SERVER_ADRESS;
+import static com.example.scubclient.ConstantUtil.SERVER_PORT;
+
 import java.util.ArrayList;
 import java.util.HashMap;
-
-
-
-
 import java.util.Map;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.DialogInterface.OnKeyListener;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -21,13 +24,12 @@ import android.view.Menu;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Toast;
-import static com.example.scubclient.ConstantUtil.SERVER_ADRESS;
-import static com.example.scubclient.ConstantUtil.SERVER_PORT;
 
 public class InfoContextActivity extends Activity{
 
@@ -35,17 +37,21 @@ public class InfoContextActivity extends Activity{
 	private TextView titleText=null;
 	private TextView timeText=null;
 	private TextView contextText=null;
+	private ImageView imageView=null;
 	private String[] info=null;
-	Map<String,Object> mmap=new HashMap<String,Object>();
-	private String []menu_name_array={"管理员登陆","退出","关于"};
-	private int[] menu_image_array={R.drawable.c,R.drawable.d,R.drawable.e};
+	private Map<String,Object> mmap=new HashMap<String,Object>();
+	private String []menu_name_array={"退出"};
+	private int[] menu_image_array={R.drawable.delete2,R.drawable.publish,R.drawable.exit};
 	private AlertDialog menuDialog;
+	private ProgressDialog pd=null;
 	private GridView menuGrid;
 	private View menuView;
 	private int mManage=1;  //管理员登录
 	private boolean jwc=false;
 	private String minfoid=null;
 	private int mtype;
+	private SharedPreferences sharedPrefenrence=null;
+	private Editor editor=null;
 		
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -53,21 +59,26 @@ public class InfoContextActivity extends Activity{
 		requestWindowFeature(Window.FEATURE_NO_TITLE); //窗口去掉标题
 		setContentView(R.layout.context);
 		super.onCreate(savedInstanceState);
-		//requestWindowFeature(Window.FEATURE_NO_TITLE);
+		ExitApp.getInstance().addActivity(this);
 		titleText=(TextView)findViewById(R.id.title);
 		timeText=(TextView)findViewById(R.id.time);
 		contextText=(TextView)findViewById(R.id.content);
-		Intent intent=getIntent();
-		Bundle bundle=intent.getExtras();
-		mManage=bundle.getInt("manage");
-		jwc=bundle.getBoolean("jwc");
-		mtype=bundle.getInt("type");
+		imageView=(ImageView)findViewById(R.id.headview);
+		
+		sharedPrefenrence=getSharedPreferences("config",Context.MODE_PRIVATE);  ///
+		mManage=sharedPrefenrence.getInt("manage", 0);
+		jwc=sharedPrefenrence.getBoolean("jwc", false);
+		mtype=sharedPrefenrence.getInt("type", 0);
+		
 		if(jwc){
-			String link=bundle.getString("link");
+			imageView.setBackgroundResource(R.drawable.jwc);
+			String link=sharedPrefenrence.getString("link", "");
 			System.out.println("link--->"+link);
 			getJwcinfo(link);
 		}else{
-			minfoid=bundle.getString("id");
+			//imageView.setBackgroundResource(R.drawable.head);
+			minfoid=sharedPrefenrence.getString("id","0");
+			mtype=sharedPrefenrence.getInt("type", 1);
 			getSingleInfo(minfoid);
 		}
 		menuView=View.inflate(this, R.layout.gridview_menu, null);
@@ -100,7 +111,7 @@ public class InfoContextActivity extends Activity{
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		if(connector!=null){
-			connector.ExitConnect();
+			//connector.ExitConnect();
 		}
 		super.onDestroy();
 	}
@@ -110,11 +121,11 @@ public class InfoContextActivity extends Activity{
 			ArrayList<HashMap<String,Object>> data=new ArrayList<HashMap<String,Object>>();
 			if(mManage==1){
 				HashMap<String,Object> map=new HashMap<String,Object>();
-				map.put("itemImage",R.drawable.a);
+				map.put("itemImage",R.drawable.delete3);
 				map.put("itemText",  "删除");
 				data.add(map);
 				HashMap<String,Object> map1=new HashMap<String,Object>();
-				map1.put("itemImage",R.drawable.b);
+				map1.put("itemImage",R.drawable.publish);
 				map1.put("itemText",  "发布信息");
 				data.add(map1);
 			}
@@ -155,21 +166,24 @@ public class InfoContextActivity extends Activity{
 	
 	private void getSingleInfo(final String id){
 		new Thread(){
-
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
+				handler.sendEmptyMessage(0);
 				try{
 					if(connector==null){
-						connector=new Connector(SERVER_ADRESS,SERVER_PORT);
+						connector=new Connector();
 					}
-					String msg="<#GET_SINGLEINFO#>"+id;
+					connector.ConnectServer(SERVER_ADRESS,SERVER_PORT);
+					String msg="<#GET_QG#>"+id;
 					connector.out.writeUTF(msg);
 					String reply=connector.in.readUTF();
 					if(reply.startsWith("<#INFO_SUCCES#>")){
 						info=reply.substring(15).split("\\|");
 						connector.ExitConnect();
-						handler.sendEmptyMessage(1);
+						handler.sendEmptyMessage(2);
+					}else if(reply.startsWith("<#INFO_NONE#>")){
+						
 					}
 				}catch(Exception e){
 					e.printStackTrace();
@@ -185,12 +199,16 @@ public class InfoContextActivity extends Activity{
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
+				handler.sendEmptyMessage(0);
 				GetJwcInfo jwcinfo=new GetJwcInfo();
 				String html=jwcinfo.getContextHtml(link);
+				if(html==null){
+					handler.sendEmptyMessage(1);
+				}
 				System.out.println(html);
 				mmap=jwcinfo.filterContextHtml(html);
 				System.out.println(mmap);
-				handler.sendEmptyMessage(2);
+				handler.sendEmptyMessage(3);
 				super.run();
 			}
 		}.start();
@@ -203,18 +221,31 @@ public class InfoContextActivity extends Activity{
 			// TODO Auto-generated method stub
 			super.handleMessage(msg);
 			switch(msg.what){
+			case 0:
+				pd=ProgressDialog.show(InfoContextActivity.this, "获取信息", "请稍后...");
+				break;
 			case 1:
-				titleText.setText(info[3]);
-				timeText.setText(info[5]);
-				contextText.setText(info[4]);
+				pd.dismiss();
+				connecttishi();
 				break;
 			case 2:
+				pd.dismiss();
+				titleText.setText(info[2]);
+				timeText.setText(info[4]);
+				contextText.setText(info[3]);
+				break;
+			case 3:
+				pd.dismiss();
 				String title=(String)mmap.get("title");
 				String time=(String)mmap.get("time");
 				String context=(String)mmap.get("context");
 				titleText.setText(title);
 				timeText.setText(time);
 				contextText.setText(context);
+				break;
+			case 4:
+				pd.dismiss();
+				Toast.makeText(InfoContextActivity.this, "没有改信息", Toast.LENGTH_LONG).show();
 				break;
 			}
 		}
@@ -242,18 +273,10 @@ public class InfoContextActivity extends Activity{
 				startActivity(intent);
 				break;
 			case 2:
-				//登录
-				intent=new Intent(InfoContextActivity.this,LoginActivity.class);
-				Bundle bundle=new Bundle();
-				bundle.putInt("type", mtype);
-				intent.putExtras(bundle);
-				startActivity(intent);
-				break;
-			case 3:
 				//退出
 				exitSys();
 				break;
-			case 4:
+			case 3:
 				
 				break;
 			}
@@ -266,19 +289,12 @@ public class InfoContextActivity extends Activity{
 		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 				long arg3) {
 			// TODO Auto-generated method stub
-			Intent intent=null;
 			switch(arg2){
 			case 0:
-				intent=new Intent(InfoContextActivity.this,LoginActivity.class);
-				Bundle bundle=new Bundle();
-				bundle.putInt("type", mtype);
-				intent.putExtras(bundle);
-				startActivity(intent);
+				exitSys();
 				break;
 			case 1:
 				exitSys();
-				break;
-			case 2:
 				break;
 			}
 		}
@@ -292,7 +308,7 @@ public class InfoContextActivity extends Activity{
         new DialogInterface.OnClickListener() {  
             @Override  
             public void onClick(DialogInterface dialog, int which) {  
-                System.exit(0);  
+            	ExitApp.getInstance().exit();   
                 dialog.cancel();  //提示对话框关闭  
             }  
         })  
@@ -339,15 +355,10 @@ public class InfoContextActivity extends Activity{
 		new Thread(){
 			public void run(){
 				try{
-					Connector con=new Connector(SERVER_ADRESS,SERVER_PORT);
+					Connector con=new Connector();
+					con.ConnectServer(SERVER_ADRESS,SERVER_PORT);
 					String msg=null;
-					if(mtype==3){
-						//青广信息
-						msg="<#DEL_INFO#>"+minfoid;
-					}else if(mtype==2){
-						//讲座信息
-					    msg="<#DEL_JZ#>"+minfoid;
-					}
+					msg="<#DEL_QG#>"+minfoid;
 					System.out.println(msg);
 					con.out.writeUTF(msg);
 					String reply=con.in.readUTF();
@@ -355,7 +366,7 @@ public class InfoContextActivity extends Activity{
 					con.ExitConnect();
 					if(reply.equals("<#DELINFO_S#>")){
 						myhandler.sendEmptyMessage(1);
-						finish();
+						System.exit(0);
 					}else{
 						myhandler.sendEmptyMessage(2);
 					}
@@ -376,6 +387,7 @@ public class InfoContextActivity extends Activity{
 			switch(msg.what){
 			case 1:
 				Toast.makeText(InfoContextActivity.this, "删除成功",Toast.LENGTH_LONG).show();
+				finish();
 				break;
 			case 2:
 				Toast.makeText(InfoContextActivity.this, "删除失败",Toast.LENGTH_LONG).show();
@@ -384,4 +396,18 @@ public class InfoContextActivity extends Activity{
 		}
 		
 	};
+	
+	protected void connecttishi(){
+		 AlertDialog alertDialog = new AlertDialog.Builder(InfoContextActivity.this)  
+	        .setTitle("提示！")   
+	        .setMessage("请检测网络")  
+	        .setPositiveButton("确定",   
+	        new DialogInterface.OnClickListener() {  
+	            @Override  
+	            public void onClick(DialogInterface dialog, int which) {  
+	                dialog.cancel();  //提示对话框关闭  
+	            }  
+	        }).create();  
+	        alertDialog.show();
+	}
 }

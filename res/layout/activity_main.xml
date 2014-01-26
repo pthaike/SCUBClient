@@ -6,9 +6,17 @@
     android:layout_height="fill_parent"
     >
     <Button
-        android:id="@+id/Button01"
+        android:id="@+id/mButton"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="登录" 
+        android:background="@drawable/manager"
+        android:text="@string/manage"
+        />
+    <Button
+        android:id="@+id/uButton"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/user"
+        android:text="@string/user" 
         />
 </LinearLayout>

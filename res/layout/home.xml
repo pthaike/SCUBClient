@@ -4,11 +4,36 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="@drawable/seahome"
     >
-    <Button
-        android:id="@+id/Button01"
+    <ImageButton
+			android:id="@+id/mButton"
+			android:src="@drawable/manager"
+			android:layout_width="120px"
+			android:layout_height="120px"
+			android:layout_marginTop="60px"
+			android:layout_marginLeft="60px"
+		/>
+
+    <ImageButton
+        android:id="@+id/uButton"
+        android:layout_width="120px"
+        android:layout_height="120px"
+        android:src="@drawable/user" 
+        android:layout_marginLeft="60px"
+        android:layout_marginTop="30px"
+        />
+
+   <!--  <Button
+        android:id="@+id/mButton"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="登录" 
+        android:text="@string/manage"
         />
+    <Button
+        android:id="@+id/uButton"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/user" 
+        /> -->
 </LinearLayout>

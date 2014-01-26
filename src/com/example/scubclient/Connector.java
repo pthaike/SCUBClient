@@ -9,8 +9,12 @@ public class Connector {
 	Socket socket=null;
 	DataInputStream in=null;
 	DataOutputStream out=null;
-	public Connector(String url,int port) {
+	public Connector() {
 		// TODO Auto-generated constructor stub
+		
+	}
+	
+	public void ConnectServer(String url,int port){
 		try{
 			socket=new Socket(url,port);
 			out=new DataOutputStream(socket.getOutputStream());
