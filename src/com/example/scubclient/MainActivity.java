@@ -39,11 +39,11 @@ public class MainActivity extends TabActivity {
 		Intent qgintent=new Intent(this,QgActivity.class);
 		Intent lfintent=new Intent(this,LfActivity.class);
 		
-		tabHost.addTab(tabHost.newTabSpec("tab1").setIndicator("首页",this.getResources().getDrawable(R.drawable.home)).setContent(homeintent));
-		tabHost.addTab(tabHost.newTabSpec("tab4").setIndicator("青广",this.getResources().getDrawable(R.drawable.qingguang)).setContent(qgintent));
-		tabHost.addTab(tabHost.newTabSpec("tab2").setIndicator("教务处",this.getResources().getDrawable(R.drawable.jwcjwc2)).setContent(jwcintent));
-		tabHost.addTab(tabHost.newTabSpec("tab3").setIndicator("讲座",this.getResources().getDrawable(R.drawable.jiangzuo)).setContent(jzintent));
-		tabHost.addTab(tabHost.newTabSpec("tab5").setIndicator("失物招领",this.getResources().getDrawable(R.drawable.lf)).setContent(lfintent));
+		tabHost.addTab(tabHost.newTabSpec("tab1").setIndicator("").setContent(homeintent));
+		tabHost.addTab(tabHost.newTabSpec("tab4").setIndicator("").setContent(qgintent));
+		tabHost.addTab(tabHost.newTabSpec("tab2").setIndicator("").setContent(jwcintent));
+		tabHost.addTab(tabHost.newTabSpec("tab3").setIndicator("").setContent(jzintent));
+		tabHost.addTab(tabHost.newTabSpec("tab5").setIndicator("").setContent(lfintent));
 		for(int i=0;i<tabWidget.getChildCount();i++){
 			tabWidget.getChildAt(i).getLayoutParams().height=48;
 			final TextView tv=(TextView)tabWidget.getChildAt(i).findViewById(android.R.id.title);
@@ -66,12 +66,29 @@ public class MainActivity extends TabActivity {
 			}
 			View vw=tabWidget.getChildAt(i);
 			if(tabHost.getCurrentTab()==i){
-				vw.setBackgroundDrawable(getResources().getDrawable(R.drawable.select));///////////
+				vw.setBackgroundDrawable(getResources().getDrawable(R.drawable.home));///////////
 			}else{
-				vw.setBackgroundDrawable(getResources().getDrawable(R.drawable.select));///////////
+				switch(i){
+				case 0:
+					vw.setBackgroundDrawable(getResources().getDrawable(R.drawable.home));
+					break;
+				case 1:
+					vw.setBackgroundDrawable(getResources().getDrawable(R.drawable.qingguang));
+					break;
+				case 2:
+					vw.setBackgroundDrawable(getResources().getDrawable(R.drawable.jiao));
+					break;
+				case 3:
+					vw.setBackgroundDrawable(getResources().getDrawable(R.drawable.jiangzuo));
+					break;
+				case 4:
+					vw.setBackgroundDrawable(getResources().getDrawable(R.drawable.lf));
+					break;
+				}
+				//vw.setBackgroundDrawable(getResources().getDrawable(R.drawable.lf));///////////
 			}
 		}
-		tabHost.setOnTabChangedListener(new OnTabChangeListener(){
+		/*tabHost.setOnTabChangedListener(new OnTabChangeListener(){
 
 			@Override
 			public void onTabChanged(String arg0) {
@@ -86,7 +103,7 @@ public class MainActivity extends TabActivity {
 				}
 			}
 			
-		});
+		});*/
 		tabHost.setBackgroundColor(Color.rgb(196,223,250)); //196,223,250  33,143,228
 //		if(mtype==5){
 //			Intent infointent=new Intent(MainActivity.this,InfoContextActivity.class);

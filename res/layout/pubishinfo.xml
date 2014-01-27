@@ -6,65 +6,67 @@
     android:layout_height="fill_parent"
     android:background="@drawable/seahome"
     >
-  <!--   <LinearLayout android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:orientation="vertical"
-        android:padding="5dip"
-        > --> 
-        <TextView 
-             android:layout_width="fill_parent"
-             android:layout_height="wrap_content"
-             android:text="@string/infotitle"
-             />
 
-         <EditText
-             android:id="@+id/infotitle"
-             android:layout_width="fill_parent"
-             android:layout_height="wrap_content"
-             android:hint="@string/titletishi" 
-             />
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+         >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/infotitle" />
+
+        <EditText
+            android:id="@+id/infotitle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="8.89"
+            android:hint="@string/titletishi" />
+    </LinearLayout>
+        
         <LinearLayout
        		android:orientation="horizontal"
-			android:paddingTop="20px"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
+			android:layout_marginLeft="20dp"
    	   		 >
    	   	<ImageButton
 			android:id="@+id/qgdatebtn"
 			android:src="@drawable/date"
-			android:layout_width="40px"
-			android:layout_height="40px"
+			android:layout_width="30dp"
+			android:layout_height="30dp"
 		/>
-   	    <!-- <Button
-    	    android:id="@+id/qgdatebtn"
-	        android:layout_height="wrap_content"
-	        android:layout_width="wrap_content"
-        	android:text="日期" 
-        	android:textSize="10dip"
-       		 /> -->
         <TextView
             android:id="@+id/publishdate"
-             android:layout_width="150px"
+            android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
 		    android:text="xxxx-xx-xx"
+		    android:textSize="20sp"
+		    android:gravity="center_vertical"
+		    android:layout_marginTop="10dp"
+		    android:layout_marginLeft="10dp"
            />
         <ImageButton
 			android:id="@+id/qgtimebtn"
 			android:src="@drawable/time"
-			android:layout_width="40px"
-			android:layout_height="40px"
+			android:layout_width="30dp"
+			android:layout_height="30dp"
+			android:layout_marginLeft="10dp"
 		/>
-        <!-- <Button
-    	    android:id="@+id/qgtimebtn"
-	        android:layout_height="wrap_content"
-	        android:layout_width="wrap_content"
-        	android:text="时间" 
-       		 /> -->
         <TextView
             android:id="@+id/qgtime"
-             android:layout_width="150px"
+             android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
 		    android:text="00:00"
+		    android:textSize="20sp"
+		    android:gravity="center_vertical"
+		    android:layout_marginTop="10dp"
+		    android:layout_marginLeft="10dp"
            />
         </LinearLayout>
 
@@ -72,6 +74,8 @@
              android:layout_width="fill_parent"
              android:layout_height="wrap_content"
              android:text="@string/infocontext"
+             android:layout_marginLeft="20dp"
+             android:layout_marginTop="10dp"
              />
         <ScrollView 
             android:layout_width="fill_parent"
@@ -81,39 +85,31 @@
              android:id="@+id/infocontext"
              android:layout_width="fill_parent"
              android:layout_height="wrap_content"
-             android:lines="10"
+             android:lines="9"
              android:hint="@string/texttishi"
+             android:layout_marginLeft="20dp"
+             android:layout_marginRight="20dp"
              />
         </ScrollView>
          <LinearLayout
        		android:orientation="horizontal"
-			android:paddingTop="20px"
+			android:paddingTop="20dp"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
+			android:layout_marginLeft="20dp"
    	    >
          <ImageButton
 			android:id="@+id/publishbtn"
 			android:src="@drawable/submit"
-			android:layout_width="120px"
-			android:layout_height="70px"
+			android:layout_width="50dp"
+			android:layout_height="40dp"
 		/>
          <ImageButton
 			android:id="@+id/exitbtn"
-			android:src="@drawable/exit"
-			android:layout_width="120px"
-			android:layout_height="70px"
+			android:src="@drawable/back"
+			android:layout_width="50dp"
+			android:layout_height="40dp"
+			android:layout_marginLeft="20dp"
 		/>
-        <!-- <Button
-            android:id="@+id/publishbtn"
-            android:layout_width="120px"
-            android:layout_height="wrap_content"
-            android:text="@string/publish" />
-        <Button
-        	android:id="@+id/exitbtn"
-        	android:layout_width="120px"
-        	android:layout_height="wrap_content"
-        	android:text="@string/exit" 
-        /> -->
         </LinearLayout>
-   <!--  </LinearLayout> -->
 </LinearLayout>
