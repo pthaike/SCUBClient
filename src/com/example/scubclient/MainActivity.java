@@ -48,7 +48,10 @@ public class MainActivity extends TabActivity {
 			tabWidget.getChildAt(i).getLayoutParams().height=48;
 			final TextView tv=(TextView)tabWidget.getChildAt(i).findViewById(android.R.id.title);
 			tv.setTextColor(this.getResources().getColorStateList(android.R.color.white));
-			if(Float.valueOf(Build.VERSION.RELEASE)<=2.1){
+			final String VERSION = Build.VERSION.RELEASE.substring(0, 3);
+            Log.d("debug", "version is "+VERSION);
+			//if(Float.valueOf(Build.VERSION.RELEASE)<=2.1){
+				if(Float.valueOf(VERSION)<=2.1){
 				try{
 					mBottomLeftStrip=tabWidget.getClass().getDeclaredField("mBottomLeftStrip");
 					mBottomRightStrip=tabWidget.getClass().getDeclaredField("mBottomRightStrip");
@@ -63,6 +66,8 @@ public class MainActivity extends TabActivity {
 				}catch(Exception e){
 					e.printStackTrace();
 				}
+			}else{
+				
 			}
 			View vw=tabWidget.getChildAt(i);
 			if(tabHost.getCurrentTab()==i){

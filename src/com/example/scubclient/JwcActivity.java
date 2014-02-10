@@ -10,10 +10,10 @@ import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.content.DialogInterface.OnKeyListener;
-import android.content.SharedPreferences.Editor;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,9 +28,9 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.Toast;
 
 public class JwcActivity extends ListActivity{
 
@@ -69,7 +69,7 @@ public class JwcActivity extends ListActivity{
 		//ÉèÖÃ´°¿Ú°ëÍ¸Ã÷
 		getWindow().setFormat(PixelFormat.TRANSLUCENT);
 		inflater=(LayoutInflater)this.getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		mainLayout=inflater.inflate(R.layout.title, null);
+		mainLayout=inflater.inflate(R.layout.jwctitle, null);
 		
 		sharedPrefenrence=getSharedPreferences("config",Context.MODE_PRIVATE);  ///
 		mManage=sharedPrefenrence.getInt("manage", 0);
@@ -145,7 +145,7 @@ public class JwcActivity extends ListActivity{
 				try{
 					jwcinfo=new GetJwcInfo();
 					String html=jwcinfo.getTitlehtml();
-					System.out.println("html----->"+html);
+					//System.out.println("html----->"+html);
 					if(html==null){
 						handler.sendEmptyMessage(0);
 						return;

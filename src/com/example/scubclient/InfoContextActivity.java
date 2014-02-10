@@ -71,7 +71,7 @@ public class InfoContextActivity extends Activity{
 		mtype=sharedPrefenrence.getInt("type", 0);
 		
 		if(jwc){
-			imageView.setBackgroundResource(R.drawable.jwc);
+			imageView.setBackgroundResource(R.drawable.jwceader);
 			String link=sharedPrefenrence.getString("link", "");
 			System.out.println("link--->"+link);
 			getJwcinfo(link);
@@ -121,7 +121,7 @@ public class InfoContextActivity extends Activity{
 			ArrayList<HashMap<String,Object>> data=new ArrayList<HashMap<String,Object>>();
 			if(mManage==1){
 				HashMap<String,Object> map=new HashMap<String,Object>();
-				map.put("itemImage",R.drawable.delete3);
+				map.put("itemImage",R.drawable.delete2);
 				map.put("itemText",  "É¾³ý");
 				data.add(map);
 				HashMap<String,Object> map1=new HashMap<String,Object>();

@@ -5,7 +5,6 @@ import static com.example.scubclient.ConstantUtil.SERVER_PORT;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +31,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
@@ -67,11 +67,13 @@ public class QgActivity extends ListActivity{
 		
 		requestWindowFeature(Window.FEATURE_NO_TITLE); //窗口去掉标题
 		//设置窗口为全屏
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		//设置窗口半透明
 		getWindow().setFormat(PixelFormat.TRANSLUCENT);
-		inflater=(LayoutInflater)this.getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		mainLayout=inflater.inflate(R.layout.title, null);
+		inflater=(LayoutInflater)this.getApplicationContext().
+				getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		mainLayout=inflater.inflate(R.layout.qgtitle, null);
 		
 		menuView=View.inflate(this, R.layout.gridview_menu, null);
 		menuDialog=new AlertDialog.Builder(this).create();
@@ -156,7 +158,9 @@ public class QgActivity extends ListActivity{
 			map.put("itemText", menuNameArray[i]);
 			data.add(map);
 		}
-		SimpleAdapter simpleAdapter=new SimpleAdapter(this,data,R.layout.item_menu,new String[]{"itemImage","itemText"},new int[]{R.id.item_image,R.id.item_text});
+		SimpleAdapter simpleAdapter=new SimpleAdapter(
+				this,data,R.layout.item_menu,new String[]{"itemImage","itemText"},
+				new int[]{R.id.item_image,R.id.item_text});
 		return simpleAdapter;
 	}
 	
@@ -232,7 +236,7 @@ public class QgActivity extends ListActivity{
 	
 	Handler handler=new Handler(){
 
-		public void handleMessage(Message msg){
+		public void handleMessage(Message msg) {
 			// TODO Auto-generated method stub
 			switch(msg.what){
 			case 0:
@@ -251,7 +255,8 @@ public class QgActivity extends ListActivity{
 	};
 	
 	private void setadapter(List<Map<String, Object>> data){
-		adapter=new SimpleAdapter(this,data,android.R.layout.simple_list_item_2,new String[]{"title","date"},new int[]{android.R.id.text1,android.R.id.text2});
+		adapter=new SimpleAdapter(this,data,android.R.layout.simple_list_item_2,
+				new String[]{"title","date"},new int[]{android.R.id.text1,android.R.id.text2});
 		
 	}
 	

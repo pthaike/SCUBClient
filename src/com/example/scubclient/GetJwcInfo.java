@@ -91,7 +91,6 @@ public class GetJwcInfo {
 		map.put("title", title);
 		map.put("time", time);
 		map.put("context", context);
-		System.out.println("ĞÅÏ¢---->"+map);
 		return map;
 	}
 }

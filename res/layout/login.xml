@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/loginback"
+    android:background="@drawable/seahome"
     android:gravity="center_horizontal"
     >
    <LinearLayout

@@ -35,12 +35,19 @@
 			android:layout_height="wrap_content"
 			android:layout_marginLeft="20dp"
    	   		 >
-   	   	<ImageButton
+   	   	<!-- <ImageButton
 			android:id="@+id/qgdatebtn"
 			android:src="@drawable/date"
 			android:layout_width="30dp"
 			android:layout_height="30dp"
-		/>
+		/> -->
+		<Button
+		    android:id="@+id/qgdatebtn"
+		    android:layout_width="50dp"
+		    android:layout_height="50dp"
+		    android:text="@string/date"
+		    android:textSize="15sp"
+		    />
         <TextView
             android:id="@+id/publishdate"
             android:layout_width="wrap_content"
@@ -51,13 +58,20 @@
 		    android:layout_marginTop="10dp"
 		    android:layout_marginLeft="10dp"
            />
-        <ImageButton
+        <!-- <ImageButton
 			android:id="@+id/qgtimebtn"
 			android:src="@drawable/time"
 			android:layout_width="30dp"
 			android:layout_height="30dp"
 			android:layout_marginLeft="10dp"
-		/>
+		/> -->
+		<Button
+		    android:id="@+id/qgtimebtn"
+		    android:layout_width="50dp"
+		    android:layout_height="50dp"
+		    android:textSize="15sp"
+		    android:text="@string/time"
+		    />
         <TextView
             android:id="@+id/qgtime"
              android:layout_width="wrap_content"

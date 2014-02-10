@@ -13,9 +13,9 @@ import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnKeyListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.DialogInterface.OnKeyListener;
 import android.content.SharedPreferences.Editor;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
@@ -29,11 +29,12 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 
 public class LfActivity extends ListActivity{
 
@@ -68,7 +69,7 @@ public class LfActivity extends ListActivity{
 		//ÉèÖÃ´°¿Ú°ëÍ¸Ã÷
 		getWindow().setFormat(PixelFormat.TRANSLUCENT);
 		inflater=(LayoutInflater)this.getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		mainLayout=inflater.inflate(R.layout.title, null);
+		mainLayout=inflater.inflate(R.layout.lftitle, null);
 		
 		menuView=View.inflate(this, R.layout.gridview_menu, null);
 		menuDialog=new AlertDialog.Builder(this).create();
@@ -174,9 +175,9 @@ public class LfActivity extends ListActivity{
 							map.put("title",t);
 							map.put("time", m[j+3]);
 							if(m[j+1].equals("0")){
-								map.put("lftype", R.drawable.date);
+								map.put("lftype", R.drawable.lf);
 							}else{
-								map.put("lftype", R.drawable.time);
+								map.put("lftype", R.drawable.lf);
 							}
 							j+=4;
 							mData.add(map);
