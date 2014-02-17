@@ -4,19 +4,19 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/seahome"
+    android:background="@drawable/loginback"
     android:gravity="center_horizontal"
     >
    <LinearLayout
        android:orientation="horizontal"
 		android:layout_gravity="center_horizontal"
-		android:paddingTop="25px"
+		android:paddingTop="25dp"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
        >
        <TextView
            android:text="@string/user_name"
-           android:layout_width="100px"
+           android:layout_width="80dp"
            style="@style/text"
 		   android:layout_height="wrap_content"
 		   android:layout_gravity="center_vertical"
@@ -24,20 +24,21 @@
         <EditText
 			android:id="@+id/etname"
 			android:singleLine="true"
-			android:layout_width="150px"
+			android:layout_width="150dp"
 			android:layout_height="wrap_content"
+			android:inputType="number"
 			/>
         </LinearLayout>
      <LinearLayout
         android:orientation="horizontal"
 		android:layout_gravity="center_horizontal"
-		android:paddingTop="25px"
+		android:paddingTop="25dp"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
        >
        <TextView
            android:text="@string/user_pswd"
-           android:layout_width="100px"
+           android:layout_width="80dp"
            style="@style/text"
 		   android:layout_height="wrap_content"
 		   android:layout_gravity="center_vertical"
@@ -45,7 +46,7 @@
         <EditText
 			android:id="@+id/etpswd"
 			android:singleLine="true"
-			android:layout_width="150px"
+			android:layout_width="150dp"
 			android:layout_height="wrap_content"
 			android:inputType="textPassword"
 			/>
@@ -59,15 +60,16 @@
         <CheckBox
 			android:id="@+id/loginRemember"
 			android:text="@string/logincheck"
-			android:layout_gravity="center_horizontal"
+			android:layout_gravity="center_vertical"
 			android:checked="false"
+			android:textColor="#f37301"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			/>												
 		<Button
 			android:id="@+id/btnLogin"
 			style="@style/button"
-			android:layout_width="120px"
+			android:layout_width="120dp"
 			android:layout_height="wrap_content"
 			android:text="@string/btnLogin"
 			/>

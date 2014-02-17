@@ -4,20 +4,14 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/seahome"
+    android:background="@drawable/jzback"
     >
-    <LinearLayout 
+   <LinearLayout 
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
         >
-        <ImageView
-            android:id="@+id/headview"
-            android:layout_width="fill_parent"
-            android:layout_height="60dip"
-             />
-
-    </LinearLayout>
-    <LinearLayout android:layout_width="fill_parent"
+        <LinearLayout android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical"
         android:padding="5dip"
@@ -27,12 +21,14 @@
         <TextView android:id="@+id/title"
              android:layout_width="fill_parent"
              android:layout_height="wrap_content"
+             android:textColor="#FFFFFF"
              android:textSize="18sp"
              android:gravity="center"
              />
          <TextView android:id="@+id/time"
              android:layout_width="fill_parent"
              android:layout_height="wrap_content"
+             android:textColor="#FFFFFF"
              android:textSize="15sp"
              android:gravity="center"
              />
@@ -44,9 +40,32 @@
          <TextView android:id="@+id/content"
              android:layout_width="fill_parent"
              android:layout_height="wrap_content"
+             android:textColor="#FFFFFF"
              android:textSize="13sp"
              />
         </ScrollView>
     </LinearLayout>
+    </LinearLayout> 
+    <RelativeLayout
+       	android:layout_weight="9"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:background="#000000"
+   	    >
+   		<ImageButton
+   		    android:id="@+id/qgcontentback"
+			android:src="@drawable/backbt"
+			android:background="#000000"
+			android:layout_width="40dp"
+			android:layout_height="fill_parent"
+			android:layout_alignParentLeft="true"
+		/>
+   		<TextView android:layout_toRightOf="@id/qgcontentback"
+   		    android:layout_width="40dp"
+            android:layout_height="fill_parent"
+            android:gravity="center_vertical"
+   		    android:text="@string/back"
+   		    android:textColor="#FFFFFF"/>
+        </RelativeLayout>
   
 </LinearLayout>

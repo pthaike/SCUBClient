@@ -22,10 +22,12 @@ import android.os.Message;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -34,10 +36,10 @@ import android.widget.Toast;
 public class InfoContextActivity extends Activity{
 
 	private Connector connector=null;
+	private ImageButton backbt=null;
 	private TextView titleText=null;
 	private TextView timeText=null;
 	private TextView contextText=null;
-	private ImageView imageView=null;
 	private String[] info=null;
 	private Map<String,Object> mmap=new HashMap<String,Object>();
 	private String []menu_name_array={"ÍË³ö"};
@@ -63,7 +65,9 @@ public class InfoContextActivity extends Activity{
 		titleText=(TextView)findViewById(R.id.title);
 		timeText=(TextView)findViewById(R.id.time);
 		contextText=(TextView)findViewById(R.id.content);
-		imageView=(ImageView)findViewById(R.id.headview);
+		backbt=(ImageButton)findViewById(R.id.qgcontentback);
+		//imageView=(ImageView)findViewById(R.id.headview);
+		backbt.setOnClickListener(new backButtonClickListener());
 		
 		sharedPrefenrence=getSharedPreferences("config",Context.MODE_PRIVATE);  ///
 		mManage=sharedPrefenrence.getInt("manage", 0);
@@ -71,7 +75,6 @@ public class InfoContextActivity extends Activity{
 		mtype=sharedPrefenrence.getInt("type", 0);
 		
 		if(jwc){
-			imageView.setBackgroundResource(R.drawable.jwceader);
 			String link=sharedPrefenrence.getString("link", "");
 			System.out.println("link--->"+link);
 			getJwcinfo(link);
@@ -298,6 +301,16 @@ public class InfoContextActivity extends Activity{
 				break;
 			}
 		}
+	}
+	
+	private class backButtonClickListener implements OnClickListener{
+
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			finish();
+		}
+		
 	}
 	
 	private void exitSys(){

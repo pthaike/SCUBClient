@@ -109,7 +109,8 @@ public class MainActivity extends TabActivity {
 			}
 			
 		});*/
-		tabHost.setBackgroundColor(Color.rgb(196,223,250)); //196,223,250  33,143,228
+		//tabHost.setBackgroundResource(R.drawable.jzback);
+		tabHost.setBackgroundColor(Color.rgb(0, 255, 255)); //196,223,250  33,143,228
 //		if(mtype==5){
 //			Intent infointent=new Intent(MainActivity.this,InfoContextActivity.class);
 //			Bundle bundle1=new Bundle();

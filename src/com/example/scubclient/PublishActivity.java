@@ -52,7 +52,7 @@ public class PublishActivity extends Activity{
 		exitbt=(ImageButton)findViewById(R.id.exitbtn);
 		datebt=(ImageButton)findViewById(R.id.qgdatebtn);
 		timebt=(ImageButton)findViewById(R.id.qgtimebtn);
-		dateText=(TextView)findViewById(R.id.publishdate);
+		dateText=(TextView)findViewById(R.id.qgdate);
 		timeText=(TextView)findViewById(R.id.qgtime);
 		
 		sharedPrefenrence=getSharedPreferences("config",Context.MODE_PRIVATE);  ///

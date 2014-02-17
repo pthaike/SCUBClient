@@ -12,8 +12,8 @@ import android.widget.ImageButton;
 
 public class HomeActivity extends Activity{
 
-	private ImageButton mbutton=null;
-	private ImageButton ubutton=null;
+	private Button mbutton=null;
+	private Button ubutton=null;
 	private SharedPreferences sharedPrefenrence=null;
 	private Editor editor=null;
 	@Override
@@ -22,8 +22,8 @@ public class HomeActivity extends Activity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.home);
 		ExitApp.getInstance().addActivity(this);
-		mbutton=(ImageButton)findViewById(R.id.mButton);
-		ubutton=(ImageButton)findViewById(R.id.uButton);
+		mbutton=(Button)findViewById(R.id.mButton);
+		ubutton=(Button)findViewById(R.id.uButton);
 		
 		mbutton.setOnClickListener(new manageListener());
 		ubutton.setOnClickListener(new userlistener());

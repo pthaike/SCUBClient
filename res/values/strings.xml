@@ -5,7 +5,7 @@
     <string name="action_settings">Settings</string>
     <string name="login">登录</string>
     <string name="user_name">用户名</string>
-    <string name="user_pswd">密码</string>
+    <string name="user_pswd">密  码</string>
     <string name="btnLogin">登录</string>
     <string name="home">首页</string>
     <string name="jwc">教务处</string>
@@ -36,4 +36,7 @@
     <string name="date">日期</string>
     <string name="lfcheck">寻找</string>
     <string name="logincheck">记住密码</string>
+    <string name="back">返回</string>
+    <string name="submit">提交</string>
+    
 </resources>
