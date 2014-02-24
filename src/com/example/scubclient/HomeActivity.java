@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
 
@@ -20,6 +21,7 @@ public class HomeActivity extends Activity{
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE); //窗口去掉标题
 		setContentView(R.layout.home);
 		ExitApp.getInstance().addActivity(this);
 		mbutton=(Button)findViewById(R.id.mButton);

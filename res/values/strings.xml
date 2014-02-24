@@ -38,5 +38,6 @@
     <string name="logincheck">记住密码</string>
     <string name="back">返回</string>
     <string name="submit">提交</string>
+    <string name="option">选项</string>
     
 </resources>

@@ -11,11 +11,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.Window;
-import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TabHost;
-import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabWidget;
 import android.widget.TextView;
 
@@ -111,15 +108,6 @@ public class MainActivity extends TabActivity {
 		});*/
 		//tabHost.setBackgroundResource(R.drawable.jzback);
 		tabHost.setBackgroundColor(Color.rgb(0, 255, 255)); //196,223,250  33,143,228
-//		if(mtype==5){
-//			Intent infointent=new Intent(MainActivity.this,InfoContextActivity.class);
-//			Bundle bundle1=new Bundle();
-//			bundle1.putBoolean("jwc", false);
-//			bundle1.putInt("manage", 1);
-//			bundle1.putInt("type", 5);
-//			infointent.putExtras(bundle1);
-//			startActivity(infointent);
-//		}
 		tabHost.setCurrentTab(1);
 		setContentView(tabHost);
 	}

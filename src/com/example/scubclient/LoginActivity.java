@@ -11,9 +11,11 @@ import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Looper;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 public class LoginActivity extends Activity{
@@ -21,6 +23,7 @@ public class LoginActivity extends Activity{
 	private EditText nameEdit=null;
 	private EditText pswdEdit=null;
 	private Button btnLogin=null;
+	private ImageButton lgbackImageButton=null;
 	private CheckBox loginRemember=null;
 	private ProgressDialog pd=null;
 	private Connector connector=null;
@@ -35,25 +38,10 @@ public class LoginActivity extends Activity{
 		setContentView(R.layout.login);
 		ExitApp.getInstance().addActivity(this);
 		btnLogin=(Button) findViewById(R.id.btnLogin);
+		lgbackImageButton=(ImageButton)findViewById(R.id.lgbackbt);
 		checkIfRemember();
-		btnLogin.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				nameEdit=(EditText)findViewById(R.id.etname);
-				pswdEdit=(EditText)findViewById(R.id.etpswd);
-				username=nameEdit.getEditableText().toString().trim(); //获取用户名
-				userpswd=pswdEdit.getEditableText().toString().trim(); //获取密码
-				if(username.equals("")||userpswd.equals("")){ //判断是否为空
-					Toast.makeText(LoginActivity.this, "请输入帐号或密码!", Toast.LENGTH_SHORT).show(); //提示用户输入
-					return;
-				}else{
-					pd=ProgressDialog.show(LoginActivity.this, "请稍后", "正在连接服务器.....",true,true);
-					Login();
-				}
-			}
-		});
+		btnLogin.setOnClickListener(new loginOnclickListener());
+		lgbackImageButton.setOnClickListener(new backOnclickListener());
 	}
 
 	@Override
@@ -67,6 +55,36 @@ public class LoginActivity extends Activity{
 
 	public LoginActivity() {
 		// TODO Auto-generated constructor stub
+	}
+	
+	private class backOnclickListener implements OnClickListener{
+
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			finish();
+		}
+		
+	}
+	
+	private class loginOnclickListener implements OnClickListener{
+
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			nameEdit=(EditText)findViewById(R.id.etname);
+			pswdEdit=(EditText)findViewById(R.id.etpswd);
+			username=nameEdit.getEditableText().toString().trim(); //获取用户名
+			userpswd=pswdEdit.getEditableText().toString().trim(); //获取密码
+			if(username.equals("")||userpswd.equals("")){ //判断是否为空
+				Toast.makeText(LoginActivity.this, "请输入帐号或密码!", Toast.LENGTH_SHORT).show(); //提示用户输入
+				return;
+			}else{
+				pd=ProgressDialog.show(LoginActivity.this, "请稍后", "正在连接服务器.....",true,true);
+				Login();
+			}
+		}
+		
 	}
 	
 	//方法：将用户的id和密码存入Preferences

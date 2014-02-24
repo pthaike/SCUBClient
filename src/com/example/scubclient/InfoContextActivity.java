@@ -43,7 +43,7 @@ public class InfoContextActivity extends Activity{
 	private String[] info=null;
 	private Map<String,Object> mmap=new HashMap<String,Object>();
 	private String []menu_name_array={"退出"};
-	private int[] menu_image_array={R.drawable.delete2,R.drawable.publish,R.drawable.exit};
+	private int[] menu_image_array={R.drawable.exit};
 	private AlertDialog menuDialog;
 	private ProgressDialog pd=null;
 	private GridView menuGrid;
@@ -76,7 +76,7 @@ public class InfoContextActivity extends Activity{
 		
 		if(jwc){
 			String link=sharedPrefenrence.getString("link", "");
-			System.out.println("link--->"+link);
+			//System.out.println("link--->"+link);
 			getJwcinfo(link);
 		}else{
 			//imageView.setBackgroundResource(R.drawable.head);
@@ -124,7 +124,7 @@ public class InfoContextActivity extends Activity{
 			ArrayList<HashMap<String,Object>> data=new ArrayList<HashMap<String,Object>>();
 			if(mManage==1){
 				HashMap<String,Object> map=new HashMap<String,Object>();
-				map.put("itemImage",R.drawable.delete2);
+				map.put("itemImage",R.drawable.delete);
 				map.put("itemText",  "删除");
 				data.add(map);
 				HashMap<String,Object> map1=new HashMap<String,Object>();
@@ -208,9 +208,9 @@ public class InfoContextActivity extends Activity{
 				if(html==null){
 					handler.sendEmptyMessage(1);
 				}
-				System.out.println(html);
+				//System.out.println(html);
 				mmap=jwcinfo.filterContextHtml(html);
-				System.out.println(mmap);
+				//System.out.println(mmap);
 				handler.sendEmptyMessage(3);
 				super.run();
 			}
@@ -346,7 +346,6 @@ public class InfoContextActivity extends Activity{
         new DialogInterface.OnClickListener() {  
             @Override  
             public void onClick(DialogInterface dialog, int which) {  
-            	System.out.println("track-->>>onclick");
                 delInfoHelp(); 
                 dialog.cancel();  //提示对话框关闭  
             }  
@@ -372,10 +371,10 @@ public class InfoContextActivity extends Activity{
 					con.ConnectServer(SERVER_ADRESS,SERVER_PORT);
 					String msg=null;
 					msg="<#DEL_QG#>"+minfoid;
-					System.out.println(msg);
+					//System.out.println(msg);
 					con.out.writeUTF(msg);
 					String reply=con.in.readUTF();
-					System.out.println(reply);
+					//System.out.println(reply);
 					con.ExitConnect();
 					if(reply.equals("<#DELINFO_S#>")){
 						myhandler.sendEmptyMessage(1);

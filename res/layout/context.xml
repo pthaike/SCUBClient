@@ -47,9 +47,9 @@
     </LinearLayout>
     </LinearLayout> 
     <RelativeLayout
-       	android:layout_weight="9"
+       	android:layout_weight="10"
 		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
+		android:layout_height="fill_parent"
 		android:background="#000000"
    	    >
    		<ImageButton

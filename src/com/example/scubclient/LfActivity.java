@@ -31,7 +31,6 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
@@ -175,9 +174,9 @@ public class LfActivity extends ListActivity{
 							map.put("title",t);
 							map.put("time", m[j+3]);
 							if(m[j+1].equals("0")){
-								map.put("lftype", R.drawable.lf);
+								map.put("lftype", R.drawable.lost);
 							}else{
-								map.put("lftype", R.drawable.lf);
+								map.put("lftype", R.drawable.found);
 							}
 							j+=4;
 							mData.add(map);
@@ -216,8 +215,9 @@ public class LfActivity extends ListActivity{
 	};
 	
 	private void setadapter(){
-		//adapter=new SimpleAdapter(this,mData,R.layout.single,new String[]{"lftype","title"},new int[]{R.id.lfphoto,R.id.lftitle});
-		adapter=new SimpleAdapter(this,mData,android.R.layout.simple_list_item_2,new String[]{"title","time"},new int[]{android.R.id.text1,android.R.id.text2});
+		adapter=new SimpleAdapter(this,mData,R.layout.lf_item,new String[]{"lftype","title","time"},new int[]{R.id.lfimg,R.id.lftitle,R.id.lftime});
+		//adapter=new SimpleAdapter(this,mData,android.R.layout.simple_list_item_2,
+		//		new String[]{"title","time"},new int[]{android.R.id.text1,android.R.id.text2});
 		
 	}
 	
