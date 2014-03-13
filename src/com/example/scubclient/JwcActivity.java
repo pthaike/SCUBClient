@@ -17,6 +17,7 @@ import android.content.SharedPreferences.Editor;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -82,7 +83,7 @@ public class JwcActivity extends ListActivity{
 		menuGrid.setAdapter(getMenuAdapter(menuName,menuImage));
 		menuGrid.setOnItemClickListener(new MyOnItemClickListener());
 		//获取服务器信息
-		pd=ProgressDialog.show(JwcActivity.this, "加载数据", "请稍后...");
+		pd=ProgressDialog.show(JwcActivity.this, "加载数据", "请稍后...",true,true);
 		getInfo();
 		mListView.setOnItemClickListener(new MyListOnItemListener());
 	}
@@ -142,11 +143,14 @@ public class JwcActivity extends ListActivity{
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
+				Looper.prepare();
 				try{
 					jwcinfo=new GetJwcInfo();
 					String html=jwcinfo.getTitlehtml();
 					//System.out.println("html----->"+html);
 					if(html==null){
+						Looper.loop();
+						Looper.myLooper().quit();
 						handler.sendEmptyMessage(0);
 						return;
 					}
@@ -155,6 +159,8 @@ public class JwcActivity extends ListActivity{
 					
 					handler.sendEmptyMessage(1);
 				}catch (Exception e){
+					Looper.loop();
+					Looper.myLooper().quit();
 					e.printStackTrace();
 				}
 			}

@@ -8,8 +8,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -35,6 +38,7 @@ public class LoginActivity extends Activity{
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);//竖屏
 		setContentView(R.layout.login);
 		ExitApp.getInstance().addActivity(this);
 		btnLogin=(Button) findViewById(R.id.btnLogin);
@@ -123,35 +127,42 @@ public class LoginActivity extends Activity{
 					if(connector==null){
 						connector=new Connector();  //连接服务器
 					}
-					connector.ConnectServer(SERVER_ADRESS, SERVER_PORT);
-					String msg="<#LOGIN_INFO#>"+username+"|"+userpswd; //组织传输信息
-					connector.out.writeUTF(msg);  //发送信息
-					String reply=connector.in.readUTF();  //读取用户反馈信息
-					pd.dismiss();  //取消进度条
-					connector.ExitConnect();
-					if(reply.startsWith("<#MANAGE_TRUE#>")){
-						//登录成功
-						Intent intent=new Intent();
-						String mid=reply.substring(15);
-						sharedPrefenrence=getSharedPreferences("config",Context.MODE_PRIVATE);
-						editor=sharedPrefenrence.edit();
-						editor.putInt("manage", 1);
-						editor.putString("mid", mid);
-						editor.commit();
-						loginRemember = (CheckBox)findViewById(R.id.loginRemember);		//获得CheckBox对象
-						if(loginRemember.isChecked()){
-							rememberMe(username,userpswd);
-						}
-						Toast.makeText(LoginActivity.this, "登陆成功", Toast.LENGTH_SHORT).show(); //提示用户输入
-						intent.setClass(LoginActivity.this,MainActivity.class);
-						startActivity(intent);
-							
-					}else if(reply.equals("<#MANAGE_FALSE#>")){
-						Toast.makeText(LoginActivity.this, "登录失败,用户名或密码出错", Toast.LENGTH_LONG).show();
+					boolean contrue=connector.ConnectServer(SERVER_ADRESS, SERVER_PORT);
+					if(!contrue||!connector.socket.isConnected()||connector.socket.isClosed()){
+						pd.dismiss();
+						Toast.makeText(LoginActivity.this, "请检查网络", Toast.LENGTH_LONG).show();
 						Looper.loop();
 						Looper.myLooper().quit();
 					}
-					//}
+					else{
+						String msg="<#LOGIN_INFO#>"+username+"|"+userpswd; //组织传输信息
+						connector.out.writeUTF(msg);  //发送信息
+						String reply=connector.in.readUTF();  //读取用户反馈信息
+						pd.dismiss();  //取消进度条
+						connector.ExitConnect();
+						if(reply.startsWith("<#MANAGE_TRUE#>")){
+							//登录成功
+							Intent intent=new Intent();
+							String mid=reply.substring(15);
+							sharedPrefenrence=getSharedPreferences("config",Context.MODE_PRIVATE);
+							editor=sharedPrefenrence.edit();
+							editor.putInt("manage", 1);
+							editor.putString("mid", mid);
+							editor.commit();
+							loginRemember = (CheckBox)findViewById(R.id.loginRemember);		//获得CheckBox对象
+							if(loginRemember.isChecked()){
+								rememberMe(username,userpswd);
+							}
+							Toast.makeText(LoginActivity.this, "登陆成功", Toast.LENGTH_SHORT).show(); //提示用户输入
+							intent.setClass(LoginActivity.this,MainActivity.class);
+							startActivity(intent);
+								
+						}else if(reply.equals("<#MANAGE_FALSE#>")){
+							Toast.makeText(LoginActivity.this, "登录失败,用户名或密码出错", Toast.LENGTH_LONG).show();
+							Looper.loop();
+							Looper.myLooper().quit();
+						}
+					}
 				}catch (Exception e){
 					e.printStackTrace();
 				}
@@ -161,4 +172,18 @@ public class LoginActivity extends Activity{
 		}.start();
 	}
 
+	Handler handler=new Handler(){
+
+		@Override
+		public void handleMessage(Message msg) {
+			// TODO Auto-generated method stub
+			super.handleMessage(msg);
+			switch(msg.what){
+			case 0:
+				Toast.makeText(LoginActivity.this, "请检查网络", Toast.LENGTH_LONG).show();
+				break;
+			}
+		}
+		
+	};
 }

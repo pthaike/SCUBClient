@@ -43,7 +43,7 @@ public class HomeActivity extends Activity{
 	 * @author lenovo
 	 *
 	 */
-	private class userlistener implements View.OnClickListener{
+	protected class userlistener implements View.OnClickListener{
 
 		@Override
 		public void onClick(View arg0) {
@@ -66,7 +66,7 @@ public class HomeActivity extends Activity{
 	 * @author lenovo
 	 *
 	 */
-	private class manageListener implements View.OnClickListener{
+	protected class manageListener implements View.OnClickListener{
 
 		@Override
 		public void onClick(View v) {

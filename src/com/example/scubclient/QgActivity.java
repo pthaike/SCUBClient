@@ -20,6 +20,7 @@ import android.content.SharedPreferences.Editor;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -87,7 +88,7 @@ public class QgActivity extends ListActivity{
 			menuGrid.setOnItemClickListener(new MyUerOnItemClickListener());
 		} 
 		//获取服务器信息
-		pd=ProgressDialog.show(QgActivity.this, "加载数据", "请稍后...");
+		pd=ProgressDialog.show(QgActivity.this, "加载数据", "请稍后...",true,true);
 		getInfo();
 		
 		mListView.setOnItemClickListener(new ListOnItemClickListener());
@@ -108,7 +109,9 @@ public class QgActivity extends ListActivity{
 		super.onRestart();
 		mData.clear();
 		getInfo();
-		adapter.notifyDataSetChanged();
+		if(adapter!=null){
+			adapter.notifyDataSetChanged();
+		}
 	}
 
 	private class MenuOnKeyListener implements OnKeyListener{
@@ -197,34 +200,43 @@ public class QgActivity extends ListActivity{
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
+				Looper.prepare();
 				try{
 				//	pd=ProgressDialog.show(JwcActivity.this, "连接服务器", "请稍后...");
 					if(connector==null){
 						connector=new Connector();
 					}
-					connector.ConnectServer(SERVER_ADRESS,SERVER_PORT);
-					String msg="<#GET_QGT#>"+start+"|"+end;
-					//pd=ProgressDialog.show(JwcActivity.this, "加载数据", "请稍后...");
-					connector.out.writeUTF(msg);
-					String reply=connector.in.readUTF();
-					if(reply.startsWith("<#INFO_SUCCES#>")){
-						String str=reply.substring(15);
-						String []m=str.split("\\|");
-						int count=Integer.parseInt(m[0]);
-						for(int i=0,j=1;i<count;i++){
-							Map<String,Object> map=new HashMap<String,Object>();
-							String t=m[j+1].length()>10?m[j+1].substring(0, 10)+".....":m[j+1];
-							map.put("id",m[j]);
-							map.put("title",t);
-							map.put("date", m[j+2]);
-							j+=3;
-							mData.add(map);
+					boolean contrue=connector.ConnectServer(SERVER_ADRESS,SERVER_PORT);
+					if(!contrue){
+						handler.sendEmptyMessage(2);
+					}
+					else{
+						String msg="<#GET_QGT#>"+start+"|"+end;
+						//pd=ProgressDialog.show(JwcActivity.this, "加载数据", "请稍后...");
+						connector.out.writeUTF(msg);
+						String reply=connector.in.readUTF();
+						if(reply.startsWith("<#INFO_SUCCES#>")){
+							String str=reply.substring(15);
+							String []m=str.split("\\|");
+							int count=Integer.parseInt(m[0]);
+							for(int i=0,j=1;i<count;i++){
+								Map<String,Object> map=new HashMap<String,Object>();
+								String t=m[j+1].length()>10?m[j+1].substring(0, 10)+".....":m[j+1];
+								map.put("id",m[j]);
+								map.put("title",t);
+								map.put("date", m[j+2]);
+								j+=3;
+								mData.add(map);
+							}
+							connector.ExitConnect();
+							//setadapter();
+							pd.dismiss();
+							handler.sendEmptyMessage(0);
+						}else{
+							Looper.loop();
+							Looper.myLooper().quit();
+							handler.sendEmptyMessage(1);
 						}
-						connector.ExitConnect();
-						//setadapter();
-						handler.sendEmptyMessage(0);
-					}else{
-						handler.sendEmptyMessage(1);
 					}
 				}catch (Exception e){
 					e.printStackTrace();
@@ -240,7 +252,7 @@ public class QgActivity extends ListActivity{
 			// TODO Auto-generated method stub
 			switch(msg.what){
 			case 0:
-				pd.dismiss();
+				
 				setadapter(mData);
 				setListAdapter(adapter);
 				break;
@@ -248,6 +260,9 @@ public class QgActivity extends ListActivity{
 				pd.dismiss();
 				Toast.makeText(QgActivity.this, "数据加载失败", Toast.LENGTH_LONG).show();
 				break;
+			case 2:
+				pd.dismiss();
+				Toast.makeText(QgActivity.this, "请检查网络", Toast.LENGTH_LONG).show();
 			}
 			super.handleMessage(msg);
 		}

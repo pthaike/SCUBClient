@@ -14,14 +14,17 @@ public class Connector {
 		
 	}
 	
-	public void ConnectServer(String url,int port){
+	public boolean ConnectServer(String url,int port){
 		try{
 			socket=new Socket(url,port);
 			out=new DataOutputStream(socket.getOutputStream());
 			in=new DataInputStream(socket.getInputStream());
 		}catch(Exception e){
+			System.out.println("socket error");
 			e.printStackTrace();
+			return false;
 		}	
+		return true;
 	}
 	
 	//¶Ï¿ªÁ¬½Ó

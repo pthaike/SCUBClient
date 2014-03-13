@@ -22,14 +22,14 @@
              android:layout_width="fill_parent"
              android:layout_height="wrap_content"
              android:textColor="#FFFFFF"
-             android:textSize="18sp"
+             android:textSize="22sp"
              android:gravity="center"
              />
          <TextView android:id="@+id/time"
              android:layout_width="fill_parent"
              android:layout_height="wrap_content"
              android:textColor="#FFFFFF"
-             android:textSize="15sp"
+             android:textSize="18sp"
              android:gravity="center"
              />
         <ScrollView 
@@ -41,7 +41,7 @@
              android:layout_width="fill_parent"
              android:layout_height="wrap_content"
              android:textColor="#FFFFFF"
-             android:textSize="13sp"
+             android:textSize="16sp"
              />
         </ScrollView>
     </LinearLayout>

@@ -2,6 +2,9 @@ package com.example.scubclient;
 
 import static com.example.scubclient.ConstantUtil.SERVER_ADRESS;
 import static com.example.scubclient.ConstantUtil.SERVER_PORT;
+
+import java.text.SimpleDateFormat;
+
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
@@ -10,6 +13,7 @@ import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -44,6 +48,7 @@ public class PublishActivity extends Activity{
 		// TODO Auto-generated method stub
 		setContentView(R.layout.pubishinfo);
 		super.onCreate(savedInstanceState);
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);//竖屏
 		ExitApp.getInstance().addActivity(this);
 		
 		titleEdit=(EditText)findViewById(R.id.infotitle);
@@ -79,7 +84,9 @@ public class PublishActivity extends Activity{
 		@Override
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
-			DatePickerDialog datePicker=new DatePickerDialog(PublishActivity.this,mtype, new MyonDateSetListner(), 2013, 10, 11);
+			java.util.Date now = new java.util.Date();
+			//DatePickerDialog datePicker=new DatePickerDialog(PublishActivity.this,mtype, new MyonDateSetListner(), 2013, 10, 11);
+			DatePickerDialog datePicker=new DatePickerDialog(PublishActivity.this,mtype, new MyonDateSetListner(), now.getYear(), now.getMonth(), now.getDay());
 			datePicker.show();
 		}
 		
@@ -101,7 +108,8 @@ public class PublishActivity extends Activity{
 		@Override
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
-			TimePickerDialog time=new TimePickerDialog(PublishActivity.this,new MyOnTimeSetListenr(),17,39,true);
+			java.util.Date now = new java.util.Date();
+			TimePickerDialog time=new TimePickerDialog(PublishActivity.this,new MyOnTimeSetListenr(),now.getHours(),now.getMinutes(),true);
 			time.show();
 		}
 		
@@ -132,6 +140,7 @@ public class PublishActivity extends Activity{
 		@Override
 		public void onClick(View arg0) {
 			// TODO Auto-generated method stub
+			
 			new Thread(){
 
 				@Override
@@ -154,6 +163,7 @@ public class PublishActivity extends Activity{
 						msg=msg+1+"|"+title+"|"+context+"|"+mdate+" "+mtime;   
 						connector.out.writeUTF(msg);
 						String reply=connector.in.readUTF();
+						myhandler.sendEmptyMessage(3);
 						connector.ExitConnect();
 						if(reply.startsWith("<#STORE_SUCCESE#>")){
 							sharedPrefenrence=getSharedPreferences("config",Context.MODE_PRIVATE);
@@ -191,6 +201,9 @@ public class PublishActivity extends Activity{
 				break;
 			case 2:
 				Toast.makeText(PublishActivity.this, "信息发布失败", Toast.LENGTH_LONG).show();
+				break;
+			case 3:
+				Toast.makeText(PublishActivity.this, "已提交", Toast.LENGTH_LONG).show();
 				break;
 			}
 		}

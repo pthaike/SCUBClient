@@ -6,6 +6,7 @@ import static com.example.scubclient.ConstantUtil.SERVER_PORT;
 import java.io.IOException;
 
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -37,6 +38,7 @@ public class LfPublishActivity extends Activity{
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);//竖屏
 		setContentView(R.layout.lfpublish);
 		ExitApp.getInstance().addActivity(this);
 		
@@ -56,6 +58,7 @@ public class LfPublishActivity extends Activity{
 		@Override
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
+			
 			new MyThread().start();
 		}
 		
@@ -80,6 +83,7 @@ public class LfPublishActivity extends Activity{
 				myHandler.sendEmptyMessage(1);
 				return;
 			}
+			myHandler.sendEmptyMessage(3);
 			checkStudent=new CheckStudent();
 			if(!checkStudent.Check(mstdnum, mstdpswd)){
 				myHandler.sendEmptyMessage(2);
@@ -90,11 +94,17 @@ public class LfPublishActivity extends Activity{
 						connector=new Connector();
 					}
 					connector.ConnectServer(SERVER_ADRESS, SERVER_PORT);
+					boolean contrue=connector.ConnectServer(SERVER_ADRESS,SERVER_PORT);
+					if(!contrue||!connector.socket.isConnected()||connector.socket.isClosed()){
+						myHandler.sendEmptyMessage(4);
+						return;
+					}
 					String msg="<#STORE_LF#>"+lftype+"|"+mstdnum+"|"+mdes+"|"+mcontent;
 					connector.out.writeUTF(msg);
 					String reply=connector.in.readUTF();
 					if(reply.equals("<#STORE_SUCCESE#>")){
 						myHandler.sendEmptyMessage(0);
+						finish();
 					}
 				}catch(IOException e){
 					e.printStackTrace();
@@ -134,6 +144,11 @@ public class LfPublishActivity extends Activity{
 			case 2:
 				Toast.makeText(LfPublishActivity.this, "学号或密码出错", Toast.LENGTH_LONG).show();
 				break;
+			case 3:
+				Toast.makeText(LfPublishActivity.this, "已提交,请稍等", Toast.LENGTH_LONG).show();
+				break;
+			case 4:
+				Toast.makeText(LfPublishActivity.this, "请检查网络", Toast.LENGTH_LONG).show();
 			}
 		}
 		

@@ -20,6 +20,7 @@ import android.content.SharedPreferences.Editor;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -83,7 +84,7 @@ public class LfActivity extends ListActivity{
 		}
 		
 		//获取服务器信息
-		pd=ProgressDialog.show(LfActivity.this, "加载数据", "请稍后...");
+		pd=ProgressDialog.show(LfActivity.this, "加载数据", "请稍后...",true,true);
 		
 		getInfo();
 		
@@ -105,7 +106,10 @@ public class LfActivity extends ListActivity{
 		super.onRestart();
 		mData.clear();
 		getInfo();
-		adapter.notifyDataSetChanged();
+		if(adapter!=null){
+			adapter.notifyDataSetChanged();
+		}
+		
 	}
 
 	//获取菜单
@@ -154,37 +158,46 @@ public class LfActivity extends ListActivity{
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
+				Looper.prepare();
 				try{
 					if(connector==null){
 						connector=new Connector();
 					}
 					connector.ConnectServer(SERVER_ADRESS,SERVER_PORT);
-					String msg="<#GET_LFT#>"+start+"|"+end;
-					connector.out.writeUTF(msg);
-					String reply=connector.in.readUTF();
-					if(reply.startsWith("<#INFO_SUCCES#>")){
-						String str=reply.substring(15);
-						String []m=str.split("\\|");
-						int count=Integer.parseInt(m[0]);
-						for(int i=0,j=1;i<count;i++){
-							Map<String,Object> map=new HashMap<String,Object>();
-							//String t=m[j+2].length()>10?m[j+2].substring(0, 10)+"....."+"\n"+m[j+3]:m[j+2]+"\n"+m[j+3];
-							String t=m[j+2].length()>10?m[j+2].substring(0, 10)+".....":m[j+2];
-							map.put("id",m[j]);
-							map.put("title",t);
-							map.put("time", m[j+3]);
-							if(m[j+1].equals("0")){
-								map.put("lftype", R.drawable.lost);
-							}else{
-								map.put("lftype", R.drawable.found);
+					boolean contrue=connector.ConnectServer(SERVER_ADRESS,SERVER_PORT);
+					if(!contrue){
+						handler.sendEmptyMessage(2);
+					}
+					else{
+						String msg="<#GET_LFT#>"+start+"|"+end;
+						connector.out.writeUTF(msg);
+						String reply=connector.in.readUTF();
+						if(reply.startsWith("<#INFO_SUCCES#>")){
+							String str=reply.substring(15);
+							String []m=str.split("\\|");
+							int count=Integer.parseInt(m[0]);
+							for(int i=0,j=1;i<count;i++){
+								Map<String,Object> map=new HashMap<String,Object>();
+								//String t=m[j+2].length()>10?m[j+2].substring(0, 10)+"....."+"\n"+m[j+3]:m[j+2]+"\n"+m[j+3];
+								String t=m[j+2].length()>10?m[j+2].substring(0, 10)+".....":m[j+2];
+								map.put("id",m[j]);
+								map.put("title",t);
+								map.put("time", m[j+3]);
+								if(m[j+1].equals("0")){
+									map.put("lftype", R.drawable.lost);
+								}else{
+									map.put("lftype", R.drawable.found);
+								}
+								j+=4;
+								mData.add(map);
 							}
-							j+=4;
-							mData.add(map);
+							connector.ExitConnect();
+							handler.sendEmptyMessage(0);
+						}else{
+							Looper.loop();
+							Looper.myLooper().quit();
+							handler.sendEmptyMessage(1);
 						}
-						connector.ExitConnect();
-						handler.sendEmptyMessage(0);
-					}else{
-						handler.sendEmptyMessage(1);
 					}
 				}catch (Exception e){
 					e.printStackTrace();
@@ -208,6 +221,9 @@ public class LfActivity extends ListActivity{
 				pd.dismiss();
 				Toast.makeText(LfActivity.this, "数据加载失败", Toast.LENGTH_LONG).show();
 				break;
+			case 2:
+				pd.dismiss();
+				Toast.makeText(LfActivity.this, "请检查网络", Toast.LENGTH_LONG).show();
 			}
 			super.handleMessage(msg);
 		}

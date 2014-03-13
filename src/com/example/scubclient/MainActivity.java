@@ -2,8 +2,10 @@ package com.example.scubclient;
 
 import java.lang.reflect.Field;
 
+import android.app.Activity;
 import android.app.TabActivity;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,11 +28,12 @@ public class MainActivity extends TabActivity {
 		super.onCreate(savedInstanceState);
 		ExitApp.getInstance().addActivity(this);
 		requestWindowFeature(Window.FEATURE_NO_TITLE); //窗口去掉标题
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);//竖屏
 		final TabHost tabHost = getTabHost();
 		final TabWidget tabWidget=tabHost.getTabWidget();
 		Field mBottomLeftStrip;
 		Field mBottomRightStrip;
-		Intent homeintent=new Intent(this,HomeActivity.class);
+		Intent homeintent=new Intent(this,Introduction.class);
 		Intent jwcintent=new Intent(this,JwcActivity.class);
 		Intent jzintent=new Intent(this,JzActivity.class);
 		Intent qgintent=new Intent(this,QgActivity.class);
@@ -42,7 +45,7 @@ public class MainActivity extends TabActivity {
 		tabHost.addTab(tabHost.newTabSpec("tab3").setIndicator("").setContent(jzintent));
 		tabHost.addTab(tabHost.newTabSpec("tab5").setIndicator("").setContent(lfintent));
 		for(int i=0;i<tabWidget.getChildCount();i++){
-			tabWidget.getChildAt(i).getLayoutParams().height=48;
+			tabWidget.getChildAt(i).getLayoutParams().height=80;
 			final TextView tv=(TextView)tabWidget.getChildAt(i).findViewById(android.R.id.title);
 			tv.setTextColor(this.getResources().getColorStateList(android.R.color.white));
 			final String VERSION = Build.VERSION.RELEASE.substring(0, 3);
@@ -107,8 +110,8 @@ public class MainActivity extends TabActivity {
 			
 		});*/
 		//tabHost.setBackgroundResource(R.drawable.jzback);
-		tabHost.setBackgroundColor(Color.rgb(0, 255, 255)); //196,223,250  33,143,228
-		tabHost.setCurrentTab(1);
+		tabHost.setBackgroundColor(Color.argb(0,0, 255, 255)); //196,223,250  33,143,228
+		tabHost.setCurrentTab(0);
 		setContentView(tabHost);
 	}
 	

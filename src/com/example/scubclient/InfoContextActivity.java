@@ -86,9 +86,9 @@ public class InfoContextActivity extends Activity{
 		}
 		menuView=View.inflate(this, R.layout.gridview_menu, null);
 		menuDialog=new AlertDialog.Builder(this).create();
-		if(!jwc){
+		//if(!jwc){
 			menuDialog.setView(menuView);
-		}
+		//}
 		menuDialog.setOnKeyListener(new OnKeyListener(){
 
 			@Override
@@ -122,7 +122,7 @@ public class InfoContextActivity extends Activity{
 	//获取菜单
 		private SimpleAdapter getMenuAdapter(String[] menuNameArray,int[] imageResourceArray){
 			ArrayList<HashMap<String,Object>> data=new ArrayList<HashMap<String,Object>>();
-			if(mManage==1){
+			if(mManage==1&&!jwc){
 				HashMap<String,Object> map=new HashMap<String,Object>();
 				map.put("itemImage",R.drawable.delete);
 				map.put("itemText",  "删除");
@@ -225,7 +225,7 @@ public class InfoContextActivity extends Activity{
 			super.handleMessage(msg);
 			switch(msg.what){
 			case 0:
-				pd=ProgressDialog.show(InfoContextActivity.this, "获取信息", "请稍后...");
+				pd=ProgressDialog.show(InfoContextActivity.this, "获取信息", "请稍后...",true,true);
 				break;
 			case 1:
 				pd.dismiss();
